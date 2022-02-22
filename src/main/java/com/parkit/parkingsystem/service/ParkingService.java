@@ -32,12 +32,15 @@ public class ParkingService {
 		try {
 			ParkingSpot parkingSpot = getNextParkingNumberIfAvailable();
 			if (parkingSpot != null && parkingSpot.getId() > 0) {
+
 				String vehicleRegNumber = getVehichleRegNumber();
+				//faire appel  à la base de données pour savoir si la voiture est à l'intérieur : isCarNotInside
+				//if(isCarNotInside)
 				parkingSpot.setAvailable(false);
 				parkingSpotDAO.updateParking(parkingSpot);// allot this parking space and mark it's availability as
 															// false
 
-				LocalDateTime inTime = LocalDateTime.now(Clock.systemUTC());
+				LocalDateTime inTime = LocalDateTime.now();
 				Ticket ticket = new Ticket();
 				// ID, PARKING_NUMBER, VEHICLE_REG_NUMBER, PRICE, IN_TIME, OUT_TIME)
 				// ticket.setId(ticketID);
@@ -47,6 +50,9 @@ public class ParkingService {
 				ticket.setInTime(inTime);
 				ticket.setOutTime(null);
 				ticketDAO.saveTicket(ticket);
+				if(ticketDAO.isReccuringUser(vehicleRegNumber)) {
+					System.out.println("Welcome back, you will have 5% of discount");
+				}
 				System.out.println("Generated Ticket and saved in DB");
 				System.out.println("Please park your vehicle in spot number:" + parkingSpot.getId());
 				System.out.println("Recorded in-time for vehicle number:" + vehicleRegNumber + " is:" + inTime);
